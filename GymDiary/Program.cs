@@ -3,169 +3,168 @@ using System.IO;
 using System.Text.Json;
 using System.Linq;
 
-
-class Program
+namespace GymDiary
 {
-    static string filePath = "gymdata.json";
-
-    static void Main()
+    class Program
     {
-        User user = LoadUser();
+        static string filePath = "gymdata.json";
 
-        bool running = true;
-
-        while (running)
+        static void Main()
         {
-            Console.WriteLine("\n=== GYM DIARY ===");
-            Console.WriteLine("1. Add workout");
-            Console.WriteLine("2. Show workouts");
-            Console.WriteLine("3. Save");
-            Console.WriteLine("4. Exit");
-            Console.Write("Choose option: ");
+            User user = LoadUser();
+            bool running = true;
 
-            string choice = Console.ReadLine();
-
-            switch (choice)
+            while (running)
             {
-                case "1":
-                    AddWorkout(user);
-                    break;
+                Console.WriteLine("\n=== GYM DIARY ===");
+                Console.WriteLine("1. Add workout");
+                Console.WriteLine("2. Show workouts");
+                Console.WriteLine("3. Save");
+                Console.WriteLine("4. Exit");
+                Console.Write("Choose option: ");
 
-                case "2":
-                    ShowWorkouts(user);
-                    break;
+                string choice = Console.ReadLine();
 
-                case "3":
-                    SaveUser(user);
-                    break;
+                switch (choice)
+                {
+                    case "1":
+                        AddWorkout(user);
+                        break;
 
-                case "4":
-                    SaveUser(user);
-                    running = false;
-                    break;
+                    case "2":
+                        ShowWorkouts(user);
+                        break;
 
-                default:
-                    Console.WriteLine("Invalid choice.");
-                    break;
+                    case "3":
+                        SaveUser(user);
+                        break;
+
+                    case "4":
+                        SaveUser(user);
+                        running = false;
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid choice.");
+                        break;
+                }
             }
         }
-    }
 
-    // 🔹 Lisää treeni
-    static void AddWorkout(User user)
-    {
-        DateTime now = DateTime.Now;
-        Workout workout = new Workout(now);
-
-        Console.WriteLine($"\nCreating workout for {now:dd.MM.yyyy}");
-
-        bool addingExercises = true;
-
-        while (addingExercises)
+        static void AddWorkout(User user)
         {
-            Console.Write("Exercise name: ");
-            string exerciseName = Console.ReadLine();
+            DateTime now = DateTime.Now;
+            Workout workout = new Workout(now);
 
-            Exercise exercise = new Exercise(exerciseName);
+            Console.WriteLine($"\nCreating workout for {now:dd.MM.yyyy}");
 
-            bool addingSets = true;
+            bool addingExercises = true;
 
-            while (addingSets)
+            while (addingExercises)
             {
-                Console.Write("Weight (kg): ");
-                double weight = double.Parse(Console.ReadLine());
+                Console.Write("Exercise name: ");
+                string exerciseName = Console.ReadLine();
 
-                Console.Write("Reps: ");
-                int reps = int.Parse(Console.ReadLine());
+                Exercise exercise = new Exercise(exerciseName);
+                bool addingSets = true;
 
-                exercise.AddSet(new Set(weight, reps));
+                while (addingSets)
+                {
+                    Console.Write("Weight (kg): ");
+                    double weight = double.Parse(Console.ReadLine());
 
-                Console.Write("Add another set? (y/n): ");
+                    Console.Write("Reps: ");
+                    int reps = int.Parse(Console.ReadLine());
+
+                    exercise.AddSet(new Set(weight, reps));
+
+                    Console.Write("Add another set? (y/n): ");
+                    if (Console.ReadLine().ToLower() != "y")
+                        addingSets = false;
+                }
+
+                workout.AddExercise(exercise);
+
+                Console.Write("Add another exercise? (y/n): ");
                 if (Console.ReadLine().ToLower() != "y")
-                    addingSets = false;
+                    addingExercises = false;
             }
 
-            workout.AddExercise(exercise);
-
-            Console.Write("Add another exercise? (y/n): ");
-            if (Console.ReadLine().ToLower() != "y")
-                addingExercises = false;
+            user.AddWorkout(workout);
+            Console.WriteLine("Workout saved to memory.");
         }
 
-        user.AddWorkout(workout);
-        Console.WriteLine("Workout saved to memory.");
-    }
-
-
-    // 🔹 Näytä treenit
-    static void ShowWorkouts(User user)
-    {
-        if (user.Workouts.Count == 0)
+        static void ShowWorkouts(User user)
         {
-            Console.WriteLine("No workouts found.");
-            return;
-        }
-
-        // Järjestetään päivämäärän mukaan (uusin ensin)
-        var sortedWorkouts = user.Workouts
-            .OrderByDescending(w => w.Date)
-            .ToList();
-
-        Console.WriteLine("\n=== WORKOUTS ===");
-
-        for (int i = 0; i < sortedWorkouts.Count; i++)
-        {
-            Console.WriteLine($"{i + 1}. {sortedWorkouts[i].Date:dd.MM.yyyy}");
-        }
-
-        Console.Write("Select workout number (0 to cancel): ");
-
-        if (int.TryParse(Console.ReadLine(), out int choice))
-        {
-            if (choice > 0 && choice <= sortedWorkouts.Count)
+            if (user.Workouts.Count == 0)
             {
-                ShowSingleWorkout(sortedWorkouts[choice - 1]);
+                Console.WriteLine("No workouts found.");
+                return;
             }
-        }
-    }
-    static void ShowSingleWorkout(Workout workout)
-    {
-        Console.WriteLine($"\n=== Workout {workout.Date:dd.MM.yyyy} ===");
 
-        foreach (var exercise in workout.Exercises)
-        {
-            Console.WriteLine($"\n{exercise.Name}");
+            var sortedWorkouts = user.Workouts
+                .OrderByDescending(w => w.Date)
+                .ToList();
 
-            foreach (var set in exercise.Sets)
+            Console.WriteLine("\n=== WORKOUTS ===");
+
+            for (int i = 0; i < sortedWorkouts.Count; i++)
             {
-                Console.WriteLine($"  {set.Weight} kg x {set.Reps}");
+                Console.Write($"{i + 1}. ");
+                PrintSummary(sortedWorkouts[i]);
+            }
+
+            Console.Write("Select workout number (0 to cancel): ");
+
+            if (int.TryParse(Console.ReadLine(), out int choice))
+            {
+                if (choice > 0 && choice <= sortedWorkouts.Count)
+                {
+                    ShowSingleWorkout(sortedWorkouts[choice - 1]);
+                }
             }
         }
-    }
 
-
-
-    // 🔹 Tallennus
-    static void SaveUser(User user)
-    {
-        string json = JsonSerializer.Serialize(
-            user,
-            new JsonSerializerOptions { WriteIndented = true }
-        );
-
-        File.WriteAllText(filePath, json);
-        Console.WriteLine("Data saved.");
-    }
-
-    // 🔹 Lataus
-    static User LoadUser()
-    {
-        if (File.Exists(filePath))
+        static void ShowSingleWorkout(Workout workout)
         {
-            string json = File.ReadAllText(filePath);
-            return JsonSerializer.Deserialize<User>(json) ?? new User("User");
+            Console.WriteLine($"\n=== Workout {workout.Date:dd.MM.yyyy} ===");
+
+            foreach (var exercise in workout.Exercises)
+            {
+                Console.WriteLine($"\n{exercise.Name}");
+
+                foreach (var set in exercise.Sets)
+                {
+                    Console.WriteLine($"  {set.Weight} kg x {set.Reps}");
+                }
+            }
         }
 
-        return new User("User");
+        static void SaveUser(User user)
+        {
+            string json = JsonSerializer.Serialize(
+                user,
+                new JsonSerializerOptions { WriteIndented = true }
+            );
+
+            File.WriteAllText(filePath, json);
+            Console.WriteLine("Data saved.");
+        }
+
+        static User LoadUser()
+        {
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                return JsonSerializer.Deserialize<User>(json) ?? new User("User");
+            }
+
+            return new User("User");
+        }
+
+        static void PrintSummary(ISavable savable)
+        {
+            Console.WriteLine(savable.GetSummary());
+        }
     }
 }

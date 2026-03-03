@@ -1,4 +1,7 @@
-﻿public interface ISavable
+﻿namespace GymDiary
 {
-    string GetSummary();
+    public interface ISavable
+    {
+        string GetSummary();
+    }
 }

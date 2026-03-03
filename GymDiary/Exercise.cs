@@ -1,18 +1,21 @@
 ﻿using System.Collections.Generic;
 
-public class Exercise
+namespace GymDiary
 {
-    public string Name { get; set; }
-    public List<Set> Sets { get; set; }
-
-    public Exercise(string name)
+    public class Exercise
     {
-        Name = name;
-        Sets = new List<Set>();
-    }
+        public string Name { get; set; }
+        public List<Set> Sets { get; set; }
 
-    public void AddSet(Set set)
-    {
-        Sets.Add(set);
+        public Exercise(string name)
+        {
+            Name = name;
+            Sets = new List<Set>();
+        }
+
+        public void AddSet(Set set)
+        {
+            Sets.Add(set);
+        }
     }
 }

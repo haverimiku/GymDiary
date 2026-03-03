@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class Workout : ISavable
+namespace GymDiary
 {
-    public DateTime Date { get; set; }
-    public List<Exercise> Exercises { get; set; }
-
-    public Workout(DateTime date)
+    public class Workout : WorkoutBase, ISavable
     {
-        Date = date;
-        Exercises = new List<Exercise>();
-    }
+        public List<Exercise> Exercises { get; set; }
 
-    public void AddExercise(Exercise exercise)
-    {
-        Exercises.Add(exercise);
-    }
+        public Workout(DateTime date) : base(date)
+        {
+            Exercises = new List<Exercise>();
+        }
 
-    public string GetSummary()
-    {
-        return $"Workout on {Date.ToShortDateString()} ({Exercises.Count} exercises)";
+        public void AddExercise(Exercise exercise)
+        {
+            Exercises.Add(exercise);
+        }
+
+        public override string GetSummary()
+        {
+            return $"Workout {Date:dd.MM.yyyy}";
+        }
     }
 }

@@ -1,16 +1,14 @@
-﻿public class Set
+﻿namespace GymDiary
 {
-    public double Weight { get; set; }
-    public int Reps { get; set; }
-
-    public Set(double weight, int reps)
+    public class Set
     {
-        Weight = weight;
-        Reps = reps;
-    }
+        public double Weight { get; set; }
+        public int Reps { get; set; }
 
-    public override string ToString()
-    {
-        return $"{Weight} kg x {Reps}";
+        public Set(double weight, int reps)
+        {
+            Weight = weight;
+            Reps = reps;
+        }
     }
 }
