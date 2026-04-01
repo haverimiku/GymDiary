@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Linq;
+using System.Globalization;
 
 namespace GymDiary
 {
@@ -70,11 +71,9 @@ namespace GymDiary
 
                 while (addingSets)
                 {
-                    Console.Write("Weight (kg): ");
-                    double weight = double.Parse(Console.ReadLine());
+                    double weight = ReadDouble("Weight (kg): ");
 
-                    Console.Write("Reps: ");
-                    int reps = int.Parse(Console.ReadLine());
+                    int reps = ReadInt("Reps: ");
 
                     exercise.AddSet(new Set(weight, reps));
 
@@ -165,6 +164,37 @@ namespace GymDiary
         static void PrintSummary(ISavable savable)
         {
             Console.WriteLine(savable.GetSummary());
+        }
+
+        static double ReadDouble(string prompt)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                string? input = Console.ReadLine()?.Trim();
+
+                if (double.TryParse(input, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out double value))
+                    return value;
+
+                if (double.TryParse(input, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out value))
+                    return value;
+
+                Console.WriteLine("Invalid input. Enter a valid number (e.g. 80 or 80.5).");
+            }
+        }
+
+        static int ReadInt(string prompt)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                string? input = Console.ReadLine()?.Trim();
+
+                if (int.TryParse(input, NumberStyles.Integer, CultureInfo.CurrentCulture, out int value))
+                    return value;
+
+                Console.WriteLine("Invalid input. Enter a valid integer (e.g. 8).");
+            }
         }
     }
 }
