@@ -6,6 +6,7 @@ using System.Globalization;
 
 namespace GymDiary
 {
+    // Pääohjelma, joka sisältää käyttöliittymän ja ohjelman logiikan
     class Program
     {
         static string filePath = "gymdata.json";
@@ -15,6 +16,7 @@ namespace GymDiary
             User user = LoadUser();
             bool running = true;
 
+            // Ohjelman päälooppi (valikko)
             while (running)
             {
                 Console.WriteLine("\n=== GYM DIARY ===");
@@ -52,6 +54,7 @@ namespace GymDiary
             }
         }
 
+        // Lisää uusi treeni käyttäjälle
         static void AddWorkout(User user)
         {
             DateTime now = DateTime.Now;
@@ -93,6 +96,7 @@ namespace GymDiary
             Console.WriteLine("Workout saved to memory.");
         }
 
+        // Näyttää kaikki treenit ja mahdollistaa yksittäisen treenin avaamisen
         static void ShowWorkouts(User user)
         {
             if (user.Workouts.Count == 0)
@@ -139,6 +143,7 @@ namespace GymDiary
             }
         }
 
+        // Tallentaa käyttäjän tiedot JSON-tiedostoon
         static void SaveUser(User user)
         {
             string json = JsonSerializer.Serialize(
@@ -150,6 +155,7 @@ namespace GymDiary
             Console.WriteLine("Data saved.");
         }
 
+        // Lataa käyttäjän tiedot tiedostosta (jos löytyy)
         static User LoadUser()
         {
             if (File.Exists(filePath))
@@ -161,6 +167,7 @@ namespace GymDiary
             return new User("User");
         }
 
+        // Polymorfismi: metodi ottaa vastaan ISavable-tyypin
         static void PrintSummary(ISavable savable)
         {
             Console.WriteLine(savable.GetSummary());
